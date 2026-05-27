@@ -16,12 +16,12 @@ Use this structure for the final `.docx` unless the user supplies a school templ
 
 - Write in Chinese unless the user requests another language.
 - Use formal, restrained, logically clear academic prose.
-- Avoid casual wording, marketing language, hollow praise, and unsupported grand claims.
-- Use heading levels suitable for a thesis chapter if the user supplied them; otherwise create modest second/third-level headings only when needed for readability.
+- Avoid casual wording, marketing language, hollow praise, unsupported grand claims, and exclamation marks.
+- Use heading levels suitable for a thesis chapter. Create modest second/third-level headings only when needed.
 
 ### Preset Writing Style (Chinese Art History)
 
-Use the following as the default prose style for art studies thesis chapters. The user may supply a writing sample to override it.
+Use the following as the default prose style. The user may supply a writing sample to override it.
 
 **Narrative flow**: Evidence-first. Open paragraphs with archaeological or historical facts (unearthed artifacts, dates, regions, quantities), then draw interpretive conclusions. Use transitional phrases like `由此可见`, `可见`, `此处提到的`, `这也印证了`, `值得注意的是` to connect evidence to analysis.
 
@@ -37,7 +37,7 @@ Use the following as the default prose style for art studies thesis chapters. Th
 
 **Paragraph structure**: Moderate length (4-8 sentences). No bullet-point list style in body text. Let paragraphs build a cumulative argument.
 
-**Register**: Formal, restrained Chinese academic register—no exclamation marks, no colloquialisms, no hollow praise. Let facts and analysis carry the argument.
+**Register**: Formal, restrained Chinese academic register—no colloquialisms, no hollow praise. Let facts and analysis carry the argument.
 
 ## Viewpoint-Source Matrix
 
@@ -47,14 +47,12 @@ Include a table with these columns:
 |---|---|---|---|---|---|---|
 
 Usage types:
-
 - 直接引用
 - 转述
 - 综合归纳
 - 灵感启发
 
 Excerpt rules:
-
 - Use only short excerpts needed for verification.
 - Avoid long continuous copied text.
 - If exact page or excerpt cannot be extracted, write `需用户核查` and explain why.
@@ -62,14 +60,12 @@ Excerpt rules:
 ## User Confirmation Section
 
 List items that need the user's judgment, such as:
-
 - Interpretations of artworks, artists, exhibitions, or styles not directly established by the literature
 - Claims based on the user's own research object or practice
 - Supervisor/school preference questions
 - Claims where literature evidence is indirect or divided
 
-Use labels:
-
+Labels:
 - `待用户确认`
 - `证据不足`
 - `存在争议`
@@ -77,34 +73,23 @@ Use labels:
 
 ## Unavailable Literature
 
-Record:
-
-- Title
-- Author
-- CNKI link or identifying information if available
+For each unavailable paper, record:
+- Title, author
+- CNKI link or identifying information
 - Reason unavailable
 - Whether the user should manually upload it
 - Whether it was excluded or only used as metadata
 
 ## GB/T 7714 References
 
-Generate references from reliable metadata. Include as available:
-
-- Author
-- Title
-- Literature type
-- Journal/school/publisher
-- Year
-- Volume/issue
-- Page range
-- DOI or CNKI URL
+Generate from reliable metadata. Include as available:
+- Author, title, literature type, journal/school/publisher, year, volume/issue, page range, DOI or CNKI URL
 
 If metadata is incomplete, keep the entry but mark missing fields as `待补全`.
 
 ## Final Response To User
 
 When delivering the document, briefly state:
-
 - The output file path
 - How many papers were found, deep-read, light-read, and unavailable
 - Any uncertain page numbers or extraction limitations

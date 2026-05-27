@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>CNKI Art Thesis Writer — 工作流程图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body { background: #1e1e2e; margin: 0; padding: 40px; display: flex; justify-content: center; font-family: system-ui; }
+  .container { max-width: 1400px; width: 100%; background: #f8f9fa; border-radius: 16px; padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+  h1 { text-align: center; color: #1e1e2e; font-size: 28px; margin: 0 0 8px 0; font-weight: 600; }
+  .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 32px; }
+  .mermaid { background: #fff; padding: 24px; border-radius: 12px; overflow-x: auto; }
+  .legend { display: flex; gap: 24px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #333; }
+  .legend-item .box { width: 20px; height: 20px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📚 CNKI 艺术论文研究工作流</h1>
+  <p class="subtitle">cnki-art-thesis-writer · 全流程编排示意图</p>
+
+  <div class="mermaid">
+flowchart TB
+    %% 样式定义
+    classDef phase fill:#e8f4fd,stroke:#4a90d9,stroke-width:2px,color:#1a1a2e
+    classDef sub fill:#fef3e2,stroke:#e6a23c,stroke-width:1.5px,color:#5a3e1a
+    classDef data fill:#e8f8e8,stroke:#52c41a,stroke-width:1.5px,color:#1a4a1a
+    classDef review fill:#fde8e8,stroke:#e74c3c,stroke-width:1.5px,color:#4a1a1a
+    classDef output fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px,color:#2e1065
+    classDef decision fill:#fff3e0,stroke:#f57c00,stroke-width:1.5px,color:#4a2a00
+
+    %% ========== 阶段 0：初始化 ==========
+    subgraph P0["阶段 0 · 初始化会话"]
+        direction LR
+        I0[/"用户输入：论文题目、开题报告、目标章节"/]:::data
+        I1["创建 session 目录<br>session.json / progress.json"]:::sub
+        I0 --> I1
+    end
+
+    %% ========== 阶段 1：检索 ==========
+    subgraph P1["阶段 1 · CNKI 检索"]
+        direction TB
+        S1["提取检索词<br>（4层策略：核心→主题→理论→案例）"]:::sub
+        S2["执行多组检索<br>目标 ≥20 篇候选"]:::sub
+        S3["保存 candidates.json"]:::data
+        S1 --> S2 --> S3
+    end
+
+    I1 --> P1
+
+    %% ========== 阶段 2：筛选 ==========
+    subgraph P2["阶段 2 · 筛选与排序"]
+        direction TB
+        R1["阅读标题/摘要/关键词<br>相关性评分 0-10"]:::sub
+        R2["分组：5 篇精读 · 15 篇泛读"]:::sub
+        R3["保存 ranked.json"]:::data
+        R1 --> R2 --> R3
+    end
+
+    S3 --> P2
+
+    %% ========== 阶段 3：下载 ==========
+    subgraph P3["阶段 3 · 下载文献"]
+        direction TB
+        D1["Playwright 自动化<br>优先 PDF → CAJ"]:::sub
+        D2["保存到 papers/downloaded/"]:::data
+        D3["记录不可获取文献"]:::data
+        D1 --> D2
+        D1 --> D3
+    end
+
+    R2 --> P3
+
+    %% ========== 阶段 4：阅读与提取 ==========
+    subgraph P4["阶段 4 · 阅读与观点提取"]
+        direction TB
+        E1["精读：论点/概念/案例<br>摘录原文 + 页码/章节"]:::sub
+        E2["泛读：主题覆盖/背景"]:::sub
+        E3["构建 viewpoint-source matrix<br>保存 matrix.json"]:::data
+        E1 --> E3
+        E2 --> E3
+    end
+
+    P3 --> P4
+
+    %% ========== 阶段 5：撰写 ==========
+    subgraph P5["阶段 5 · 撰写章节"]
+        direction TB
+        W1["遵循 output-spec.md 文体<br>证据优先，[n]page 引用"]:::sub
+        W2["生成 viewpoint-source 矩阵表"]:::sub
+        W3["生成 GB/T 7714 参考文献"]:::sub
+        W1 --> W2 --> W3
+    end
+
+    E3 --> P5
+
+    %% ========== 阶段 6：质量审查 ==========
+    subgraph P6["阶段 6 · 质量审查"]
+        direction TB
+        C1{"每段 ≥ 1 出处？"}:::decision
+        C2{"页码/摘录可验证？"}:::decision
+        C3{"引用信息完整？"}:::decision
+        C1 -->|否| F1["← 返回阶段 5 修改"]:::review
+        C2 -->|否| F2["← 返回阶段 1 补文献"]:::review
+        C3 -->|否| F3["标记 待补全"]:::sub
+        C1 -->|是| C2
+        C2 -->|是| C3
+        C3 -->|是| C4["综合评分<br>≥70% → 交付 / <70% → 修改 / <50% → 重检索"]:::decision
+    end
+
+    P5 --> P6
+    F1 -.->|迭代| P5
+    F2 -.->|迭代| P1
+
+    %% ========== 阶段 7：交付 ==========
+    subgraph P7["阶段 7 · 交付 .docx"]
+        direction TB
+        O1["章节正文"]:::output
+        O2["观点-来源矩阵"]:::output
+        O3["GB/T 7714 参考文献"]:::output
+        O4["待用户确认项"]:::output
+        O5["不可获取文献列表"]:::output
+        O6["检索与筛选记录"]:::output
+        O1 ~~~ O2 ~~~ O3 ~~~ O4 ~~~ O5 ~~~ O6
+    end
+
+    C4 -->|≥70%| P7
+
+    %% ========== 阶段 0 - 2 的漏斗示意 ==========
+    P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="box" style="background:#e8f4fd;border:2px solid #4a90d9"></div> 处理阶段</div>
+    <div class="legend-item"><div class="box" style="background:#fef3e2;border:1.5px solid #e6a23c"></div> 具体步骤</div>
+    <div class="legend-item"><div class="box" style="background:#e8f8e8;border:1.5px solid #52c41a"></div> 数据/文件</div>
+    <div class="legend-item"><div class="box" style="background:#fde8e8;border:1.5px solid #e74c3c"></div> 审查回退</div>
+    <div class="legend-item"><div class="box" style="background:#f3e8ff;border:2px solid #8b5cf6"></div> 最终产出</div>
+    <div class="legend-item"><div class="box" style="background:#fff3e0;border:1.5px solid #f57c00"></div> 决策点</div>
+  </div>
+</div>
+<script>mermaid.initialize({startOnLoad:true,theme:'neutral',flowchart:{htmlLabels:true,curve:'basis'}});</script>
+</body>
+</html>
